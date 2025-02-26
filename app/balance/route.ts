@@ -1,6 +1,8 @@
 // src/pages/api/balance.ts
+//  http://localhost:3000/balance?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Network, Alchemy, AlchemySubscription } from "alchemy-sdk";
+import { Network, Alchemy } from "alchemy-sdk";
 
 // 配置 Alchemy 设置
 const settings = {
@@ -28,15 +30,6 @@ async function getETHBalance(address: string): Promise<string> {
     throw new Error("Failed to fetch balance");
   }
 }
-
-// 监听待处理的交易
-/* alchemy.ws.on(
-  {
-    method: AlchemySubscription.PENDING_TRANSACTIONS,
-    toAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // 示例地址
-  },
-  (tx) => console.log(tx)
-); */
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,7 +1,7 @@
-// src/pages/api/balance.ts
+// app/balance/route.ts
 //  http://localhost:3000/balance?address=0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
 
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import { Network, Alchemy } from "alchemy-sdk";
 
 // 配置 Alchemy 设置
@@ -16,42 +16,39 @@ const alchemy = new Alchemy(settings);
 // 获取 ETH 余额的方法
 async function getETHBalance(address: string): Promise<string> {
   try {
-    // 获取指定地址的 ETH 余额（以 Wei 为单位）
-    const balanceInWei = await alchemy.core.getBalance(address);
+    //Call the method to return the token balances for this address
+    /*     const response = await alchemy.core.getTokenBalances(address, [
+      usdcContract,
+    ]); */
     // 将 Wei 转换为 Ether
-    const balanceInEther = parseInt(balanceInWei, 16) / 1e18;
-    return balanceInEther.toString();
+    /* const balanceInEther = parseInt(response, 16) / 1e18; */
+    return "1000";
   } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error fetching balance:", error.message);
-    } else {
-      console.error("Unknown error occurred:", error);
-    }
+    console.error(
+      "Error fetching balance:",
+      error instanceof Error ? error.message : error
+    );
     throw new Error("Failed to fetch balance");
   }
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method === "GET") {
-    const { address } = req.query;
+// API 路由处理 - 处理 GET 请求
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const address = url.searchParams.get("address");
 
-    if (!address || typeof address !== "string") {
-      return res
-        .status(400)
-        .json({ error: "Address is required and must be a valid string" });
-    }
+  if (!address || typeof address !== "string") {
+    return NextResponse.json(
+      { error: "Address is required and must be a valid string" },
+      { status: 400 }
+    );
+  }
 
-    try {
-      // 调用 getETHBalance 获取余额
-      const balance = await getETHBalance(address);
-      return res.status(200).json({ address, balance });
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
-  } else {
-    return res.status(405).json({ error: "Method Not Allowed" });
+  try {
+    // 调用 getETHBalance 获取余额
+    const balance = await getETHBalance(address);
+    return NextResponse.json({ address, balance });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

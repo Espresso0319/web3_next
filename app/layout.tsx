@@ -1,28 +1,25 @@
 // app/layout.tsx
-import React from 'react';
-import "./globals.css";
+import React from 'react'
+import { WagmiWrapper } from './WagmiWrapper'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata = {
+  title: 'Wagmi & Next.js App Router Demo',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body>
-        {/* Global layout (like header, footer) */}
-        <header>
-          <nav>
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/about">About</a></li>
-            </ul>
-          </nav>
-        </header>
-
-        {/* The content of the page will be injected here */}
-        <main>{children}</main>
-
-        <footer>
-          <p>&copy; 2025 My App</p>
-        </footer>
+        {/* 因为 WagmiWrapper 是一个 Client Component，
+            这里是一个 Server Component，把它直接用在 JSX 中即可。 */}
+        <WagmiWrapper>
+          {children}
+        </WagmiWrapper>
       </body>
     </html>
-  );
+  )
 }

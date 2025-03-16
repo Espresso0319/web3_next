@@ -1,12 +1,16 @@
 "use client";
 
-import { useConnect, useAccount, useDisconnect } from "wagmi";
+import { useConnect, useAccount, useDisconnect, useBalance } from "wagmi";
+import { formatUnits } from "viem";
 import { useState } from "react";
 
 export default function ConnectWallet() {
   const { connect, connectors, error } = useConnect();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const { data: balanceData } = useBalance({
+    address: address,
+  });
   const [isOpen, setIsOpen] = useState(false);
 
   if (isConnected) {
@@ -20,6 +24,9 @@ export default function ConnectWallet() {
           <div className="font-mono text-xs sm:text-sm">
             {address?.substring(0, 6)}...
             {address?.substring(address.length - 4)}
+          </div>
+          <div className="mt-1 font-medium text-xs sm:text-sm">
+            {balanceData ? `${parseFloat(formatUnits(balanceData.value, balanceData.decimals)).toFixed(4)} ETH` : '加载中...'}
           </div>
         </div>
         <button
